@@ -18,7 +18,7 @@ public class ProductServiceTest {
     private static Product testProduct;
 
     @Before
-    public void createFirstProduct(){
+    public void createFirstProduct() {
         testProduct = new Product();
         testProduct.setName("Apple");
         testProduct.setPrice(new BigDecimal(5));
@@ -27,7 +27,7 @@ public class ProductServiceTest {
     }
 
     @After
-    public void cleanAfterEachTest(){
+    public void cleanAfterEachTest() {
         victim.removeAllProducts();
     }
 
@@ -38,7 +38,7 @@ public class ProductServiceTest {
         newProduct.setPrice(new BigDecimal(5));
         newProduct.setCategory(Category.FRUIT);
 
-        long expectedRepositorySize = victim.getStorageSize()+1;
+        long expectedRepositorySize = victim.getStorageSize() + 1;
         victim.createProduct(newProduct);
         long actualRepositorySize = victim.getStorageSize();
         assertEquals(expectedRepositorySize, actualRepositorySize);
@@ -46,7 +46,7 @@ public class ProductServiceTest {
 
     @Test
     public void shouldDeleteById() {
-        long expectedRepositorySize = victim.getStorageSize()-1;
+        long expectedRepositorySize = victim.getStorageSize() - 1;
         victim.deleteById(0L);
         long actualRepositorySize = victim.getStorageSize();
         assertEquals(expectedRepositorySize, actualRepositorySize);
@@ -62,7 +62,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void shouldSetDiscountPrice(){
+    public void shouldSetDiscountPrice() {
         BigDecimal discount = new BigDecimal(40);
         victim.setPriceById(0L, new BigDecimal(100));
         victim.setDiscountById(0L, discount);

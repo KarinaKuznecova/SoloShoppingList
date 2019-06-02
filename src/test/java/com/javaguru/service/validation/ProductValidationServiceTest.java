@@ -4,7 +4,6 @@ import com.javaguru.repository.InMemoryRepository;
 import com.javaguru.service.Category;
 import com.javaguru.service.Product;
 import com.javaguru.service.ProductService;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

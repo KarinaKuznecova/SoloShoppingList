@@ -27,6 +27,7 @@ public class InMemoryRepository {
 
     public void removeAllProducts() {
         productRepository.clear();
+        productIdSequence = 0L;
     }
 
     public void printAll() {
@@ -35,11 +36,11 @@ public class InMemoryRepository {
         }
     }
 
-    public boolean containsProduct(Product product){
+    public boolean containsProduct(Product product) {
         return productRepository.containsValue(product);
     }
 
-    public long getStorageSize(){
+    public long getStorageSize() {
         return productRepository.size();
     }
 }
