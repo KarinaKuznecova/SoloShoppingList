@@ -1,13 +1,15 @@
 package com.javaguru.console;
 
+import com.javaguru.repository.InMemoryRepository;
 import com.javaguru.service.ProductService;
+import com.javaguru.service.validation.ProductValidationService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConsoleUI {
     private Reader reader = new Reader();
-    private ProductService productService = new ProductService();
+    private ProductService productService = new ProductService(new InMemoryRepository(), new ProductValidationService());
     private List<ShoppingCart> shoppingCarts = new ArrayList<>();
     private List<MenuItem> menuItems = new ArrayList<>();
 

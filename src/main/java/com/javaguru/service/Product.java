@@ -58,7 +58,7 @@ public class Product {
         return discount;
     }
 
-    void setDiscount(BigDecimal discount) {
+    public void setDiscount(BigDecimal discount) {
         if (discount.intValue() > 0 && discount.intValue() <= 80) {
             this.discount = discount;
             setDiscountPrice();
@@ -73,6 +73,10 @@ public class Product {
     private void setDiscountPrice() {
         BigDecimal toSubtract = discount.multiply(((getPrice().divide(new BigDecimal("100")))));
         discountPrice = getPrice().subtract(toSubtract).setScale(2, RoundingMode.HALF_EVEN);
+    }
+
+    public BigDecimal getDiscountPrice() {
+        return discountPrice;
     }
 
     @Override

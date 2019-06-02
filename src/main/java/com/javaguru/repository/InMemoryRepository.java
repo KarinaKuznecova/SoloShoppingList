@@ -38,4 +38,8 @@ public class InMemoryRepository {
     public boolean containsProduct(Product product){
         return productRepository.containsValue(product);
     }
+
+    public long getStorageSize(){
+        return productRepository.size();
+    }
 }
