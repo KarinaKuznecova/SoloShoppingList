@@ -1,25 +1,40 @@
 package com.javaguru.service.validation;
 
-import com.javaguru.repository.InMemoryRepository;
+import com.javaguru.repository.Repository;
 import com.javaguru.service.Category;
 import com.javaguru.service.Product;
 import com.javaguru.service.ProductService;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 public class ProductValidationServiceTest {
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-    private ProductValidationService victim = new ProductValidationService();
+    private Repository repository;
+    private ProductValidationService victim;
 
-    private Product product;
+    @Before
+    public void setUp(){
+        repository = mock(Repository.class);
+        Set<ProductValidationRule> validationRules = new HashSet<>();
+        validationRules.add(new ProductNameValidationRule());
+        validationRules.add(new ProductPriceValidationRule());
+        validationRules.add(new ProductDiscountValidationRule());
+        validationRules.add(new ProductUniquenessValidationRule(repository));
+        victim = new ProductValidationService(validationRules);
+    }
 
     @Test
     public void shouldValidate() {
@@ -115,12 +130,11 @@ public class ProductValidationServiceTest {
         product.setPrice(new BigDecimal(10));
         product.setCategory(Category.FRUIT);
         product.setDiscount(new BigDecimal(50));
-        ProductService productService = new ProductService(new InMemoryRepository(), victim);
-        productService.createProduct(product);
 
         expectedException.expect(ValidationException.class);
         expectedException.expectMessage("Products must be unique");
 
-        productService.createProduct(product);
+        doReturn(true).when(repository).containsProduct(product);
+        victim.validate(product);
     }
 }

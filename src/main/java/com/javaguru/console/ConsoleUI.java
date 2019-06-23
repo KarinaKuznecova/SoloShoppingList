@@ -1,17 +1,26 @@
 package com.javaguru.console;
 
-import com.javaguru.repository.InMemoryRepository;
+import com.javaguru.repository.Repository;
 import com.javaguru.service.ProductService;
-import com.javaguru.service.validation.ProductValidationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class ConsoleUI {
     private Reader reader = new Reader();
-    private ProductService productService = new ProductService(new InMemoryRepository(), new ProductValidationService());
+    private final ProductService productService;
     private List<ShoppingCart> shoppingCarts = new ArrayList<>();
     private List<MenuItem> menuItems = new ArrayList<>();
+    private Repository repository;
+
+    @Autowired
+    public ConsoleUI(ProductService productService, Repository repository) {
+        this.productService = productService;
+        this.repository = repository;
+    }
 
     public void go() {
         setUp();
@@ -32,7 +41,7 @@ public class ConsoleUI {
         menuItems.add(3, new EditProductMenu());
         menuItems.add(4, new DeleteByIdMenu());
         menuItems.add(5, new PrintAllProductsMenu());
-        menuItems.add(6, new CreateNewShoppingCartMenu(shoppingCarts));
+        menuItems.add(6, new CreateNewShoppingCartMenu(shoppingCarts, repository));
         menuItems.add(7, new AddToCartMenu(shoppingCarts));
         menuItems.add(8, new PrintCartItemsMenu(shoppingCarts));
     }

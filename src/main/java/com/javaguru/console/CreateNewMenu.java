@@ -13,7 +13,7 @@ public class CreateNewMenu implements MenuItem {
     public void action(ProductService productService) {
         CategoryChooser categoryChooser = new CategoryChooser();
         String name = reader.getUserInputLine("Enter product name: ");
-        BigDecimal price = new BigDecimal(reader.getUserInputDouble("Enter product price: "));
+        BigDecimal price = BigDecimal.valueOf(reader.getUserInputDouble("Enter product price: "));
         String description = reader.getUserInputLine("Enter description (optional): ");
         Category category = categoryChooser.getCategory();
         Product product = new Product();
@@ -23,6 +23,6 @@ public class CreateNewMenu implements MenuItem {
         if (!description.isEmpty()) {
             product.setDescription(description);
         }
-        System.out.println("Result: " + productService.createProduct(product));
+        System.out.println("Product created with id: " + productService.createProduct(product));
     }
 }

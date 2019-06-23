@@ -1,20 +1,20 @@
 package com.javaguru.service.validation;
 
-import com.javaguru.repository.InMemoryRepository;
 import com.javaguru.service.Product;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
 import java.util.Set;
 
+@Component
 public class ProductValidationService {
 
-    private Set<ProductValidationRule> validationRules = new HashSet<>();
+    private Set<ProductValidationRule> validationRules;
 
-    public ProductValidationService() {
-        validationRules.add(new ProductNameValidationRule());
-        validationRules.add(new ProductPriceValidationRule());
-        validationRules.add(new ProductDiscountValidationRule());
+    @Autowired
+    public ProductValidationService(Set<ProductValidationRule> validationRules) {
+        this.validationRules = validationRules;
     }
 
     public void validate(Product product) {
@@ -45,12 +45,6 @@ public class ProductValidationService {
         BigDecimal minEligiblePrice = new BigDecimal(20);
         if (product.getPrice().compareTo(minEligiblePrice) <= 0){
             throw new ValidationException("Can't set discount to product cheaper than 20");
-        }
-    }
-
-    public void validateUniqueness(Product product, InMemoryRepository repository){
-        if (repository.containsProduct(product)){
-            throw new ValidationException("Products must be unique");
         }
     }
 }

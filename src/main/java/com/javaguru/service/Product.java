@@ -14,7 +14,7 @@ public class Product {
     private BigDecimal discount;
     private BigDecimal discountPrice;
 
-    Long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -59,20 +59,20 @@ public class Product {
     }
 
     public void setDiscount(BigDecimal discount) {
-        if (discount.intValue() > 0 && discount.intValue() <= 80) {
-            this.discount = discount;
-            setDiscountPrice();
-        } else if (discount.intValue() == 0) {
+        if (discount == null || discount.intValue() == 0) {
             this.discount = null;
             this.discountPrice = null;
+        } else if (discount.intValue() > 0 && discount.intValue() <= 80) {
+            this.discount = discount;
+            setDiscountPrice();
         } else {
             System.out.println("Discount must be in range 0 - 80");
         }
     }
 
     private void setDiscountPrice() {
-        BigDecimal toSubtract = discount.multiply(((getPrice().divide(new BigDecimal("100")))));
-        discountPrice = getPrice().subtract(toSubtract).setScale(2, RoundingMode.HALF_EVEN);
+        BigDecimal toSubtract = discount.multiply(price.divide(new BigDecimal("100")));
+        discountPrice = price.subtract(toSubtract).setScale(2, RoundingMode.HALF_EVEN);
     }
 
     public BigDecimal getDiscountPrice() {

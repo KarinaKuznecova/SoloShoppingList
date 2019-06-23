@@ -1,5 +1,6 @@
 package com.javaguru.console;
 
+import com.javaguru.repository.Repository;
 import com.javaguru.service.Product;
 
 import java.util.ArrayList;
@@ -9,25 +10,28 @@ public class ShoppingCart {
 
     private String name;
     private String description;
+    private Repository repository;
 
-    private List<Product> products = new ArrayList<>();
+    private List<Long> products = new ArrayList<>();
 
-    ShoppingCart(String name, String description) {
+    ShoppingCart(String name, String description, Repository repository) {
         this.name = name;
         this.description = description;
+        this.repository = repository;
     }
 
     void addProduct(Product product) {
-        products.add(product);
+        products.add(product.getId());
     }
 
     public void removeProduct(Product product) {
-        products.remove(product);
+        products.remove(product.getId());
     }
 
     void printAllProducts() {
-        for (Product i : products) {
-            System.out.println(i);
+        for (Long i : products) {
+            System.out.println(repository.getProductById(i));
+            System.out.println();
         }
     }
 

@@ -1,11 +1,17 @@
 package com.javaguru.repository;
 
 import com.javaguru.service.Product;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
-public class InMemoryRepository {
+@Component
+@Profile("InMemoryDB")
+public class InMemoryRepository implements Repository {
 
     private Long productIdSequence = 0L;
     private Map<Long, Product> productRepository = new HashMap<>();
@@ -17,8 +23,8 @@ public class InMemoryRepository {
         return product;
     }
 
-    public Product getProductById(Long id) {
-        return productRepository.get(id);
+    public Optional<Product> getProductById(Long id) {
+        return Optional.ofNullable(productRepository.get(id));
     }
 
     public void removeProductById(Long id) {
@@ -42,5 +48,21 @@ public class InMemoryRepository {
 
     public long getStorageSize() {
         return productRepository.size();
+    }
+
+    public void changeName(Long id, String newName){
+        productRepository.get(id).setName(newName);
+    }
+
+    public void changePrice(Long id, BigDecimal newPrice) {
+        productRepository.get(id).setPrice(newPrice);
+    }
+
+    public void changeDiscount(Long id, BigDecimal discount) {
+        productRepository.get(id).setDiscount(discount);
+    }
+
+    public void changeDescription(Long id, String newDescription) {
+        productRepository.get(id).setDescription(newDescription);
     }
 }

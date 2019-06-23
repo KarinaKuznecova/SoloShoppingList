@@ -1,29 +1,48 @@
 package com.javaguru.service;
 
-import com.javaguru.repository.InMemoryRepository;
+import com.javaguru.repository.Repository;
 import com.javaguru.service.validation.ProductValidationService;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
+@Component
 public class ProductServiceTest {
 
-    private ProductService victim = new ProductService(new InMemoryRepository(), new ProductValidationService());
+    private ProductService victim;
+    private Repository repository;
+    private ProductValidationService validationService;
     private static Product testProduct;
+    private ArgumentCaptor<Product> productCaptor = ArgumentCaptor.forClass(Product.class);
+    private ArgumentCaptor<Long> idCaptor = ArgumentCaptor.forClass(Long.class);
+    private ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
+    private ArgumentCaptor<BigDecimal> bigDecimalCaptor = ArgumentCaptor.forClass(BigDecimal.class);
 
+    @Autowired
     @Before
     public void createFirstProduct() {
+        repository = mock(Repository.class);
+        validationService = mock(ProductValidationService.class);
+
+        victim = new ProductService(repository, validationService);
+
         testProduct = new Product();
         testProduct.setName("Apple");
         testProduct.setPrice(new BigDecimal(5));
         testProduct.setCategory(Category.FRUIT);
-        victim.createProduct(testProduct);
+        testProduct.setId(999L);
+
+        doReturn(Optional.ofNullable(testProduct)).when(repository).getProductById(testProduct.getId());
     }
 
     @After
@@ -33,71 +52,65 @@ public class ProductServiceTest {
 
     @Test
     public void shouldCreateProduct() {
-        Product newProduct = new Product();
-        newProduct.setName("Orange");
-        newProduct.setPrice(new BigDecimal(5));
-        newProduct.setCategory(Category.FRUIT);
+        doReturn(testProduct).when(repository).add(testProduct);
 
-        long expectedRepositorySize = victim.getStorageSize() + 1;
-        victim.createProduct(newProduct);
-        long actualRepositorySize = victim.getStorageSize();
-        assertEquals(expectedRepositorySize, actualRepositorySize);
+        Long id = victim.createProduct(testProduct);
+        verify(validationService).validate(productCaptor.capture());
+        assertEquals(productCaptor.getValue(), testProduct);
+
+        verify(repository).add(productCaptor.capture());
+        assertEquals(productCaptor.getValue(), testProduct);
+
+        assertEquals(id, testProduct.getId());
     }
 
     @Test
     public void shouldDeleteById() {
-        long expectedRepositorySize = victim.getStorageSize() - 1;
-        victim.deleteById(0L);
-        long actualRepositorySize = victim.getStorageSize();
-        assertEquals(expectedRepositorySize, actualRepositorySize);
+        victim.deleteById(testProduct.getId());
+        verify(repository).removeProductById(idCaptor.capture());
+        assertEquals(idCaptor.getValue(), testProduct.getId());
     }
 
     @Test
     public void shouldSetDiscountById() {
         BigDecimal discount = new BigDecimal(40);
-        victim.setPriceById(0L, new BigDecimal(100));
-        victim.setDiscountById(0L, discount);
-        BigDecimal actualDiscount = victim.getProductById(0L).getDiscount();
-        assertEquals(discount, actualDiscount);
-    }
-
-    @Test
-    public void shouldSetDiscountPrice() {
-        BigDecimal discount = new BigDecimal(40);
-        victim.setPriceById(0L, new BigDecimal(100));
-        victim.setDiscountById(0L, discount);
-        BigDecimal actualDiscountPrice = victim.getProductById(0L).getDiscountPrice();
-        BigDecimal expectedPrice = new BigDecimal(60.00).setScale(2, RoundingMode.HALF_EVEN);
-        assertEquals(expectedPrice, actualDiscountPrice);
+        victim.setPriceById(testProduct.getId(), new BigDecimal(100));
+        victim.setDiscountById(testProduct.getId(), discount);
+        verify(repository).changeDiscount(idCaptor.capture(), bigDecimalCaptor.capture());
+        assertEquals(testProduct.getId(), idCaptor.getValue());
+        assertEquals(discount, bigDecimalCaptor.getValue());
     }
 
     @Test
     public void setPriceById() {
         BigDecimal newPrice = new BigDecimal(77);
-        victim.setPriceById(0L, newPrice);
-        assertEquals(newPrice, victim.getProductById(0L).getPrice());
-
+        victim.setPriceById(testProduct.getId(), newPrice);
+        verify(repository).changePrice(idCaptor.capture(), bigDecimalCaptor.capture());
+        assertEquals(testProduct.getId(), idCaptor.getValue());
+        assertEquals(newPrice, bigDecimalCaptor.getValue());
     }
 
     @Test
     public void changeProductDescription() {
         String newDescription = "Test description";
-        victim.changeProductDescription(0L, newDescription);
-        assertEquals(newDescription, victim.getProductById(0L).getDescription());
+        victim.changeProductDescription(testProduct.getId(), newDescription);
+        verify(repository).changeDescription(idCaptor.capture(), stringCaptor.capture());
+        assertEquals(testProduct.getId(), idCaptor.getValue());
+        assertEquals(newDescription, stringCaptor.getValue());
     }
 
     @Test
     public void changeName() {
         String newName = "TestName";
-        victim.changeName(0L, newName);
-        assertEquals(newName, victim.getProductById(0L).getName());
+        victim.changeName(testProduct.getId(), newName);
+        verify(repository).changeName(idCaptor.capture(), stringCaptor.capture());
+        assertEquals(testProduct.getId(), idCaptor.getValue());
+        assertEquals(newName, stringCaptor.getValue());
     }
 
     @Test
     public void removeAllProducts() {
-        long expectedRepositorySize = 0;
         victim.removeAllProducts();
-        long actualRepositorySize = victim.getStorageSize();
-        assertEquals(expectedRepositorySize, actualRepositorySize);
+        verify(repository).removeAllProducts();
     }
 }

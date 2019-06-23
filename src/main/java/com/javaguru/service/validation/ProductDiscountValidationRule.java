@@ -1,10 +1,12 @@
 package com.javaguru.service.validation;
 
 import com.javaguru.service.Product;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-class ProductDiscountValidationRule implements ProductValidationRule {
+@Component
+public class ProductDiscountValidationRule implements ProductValidationRule {
 
     private BigDecimal maxDiscount = new BigDecimal(80);
 
