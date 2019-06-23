@@ -2,6 +2,7 @@ package com.javaguru.console;
 
 import com.javaguru.repository.Repository;
 import com.javaguru.service.Product;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,14 +11,15 @@ public class ShoppingCart {
 
     private String name;
     private String description;
+
+    @Autowired
     private Repository repository;
 
     private List<Long> products = new ArrayList<>();
 
-    ShoppingCart(String name, String description, Repository repository) {
+    ShoppingCart(String name, String description) {
         this.name = name;
         this.description = description;
-        this.repository = repository;
     }
 
     void addProduct(Product product) {

@@ -41,7 +41,7 @@ public class ConsoleUI {
         menuItems.add(3, new EditProductMenu());
         menuItems.add(4, new DeleteByIdMenu());
         menuItems.add(5, new PrintAllProductsMenu());
-        menuItems.add(6, new CreateNewShoppingCartMenu(shoppingCarts, repository));
+        menuItems.add(6, new CreateNewShoppingCartMenu(shoppingCarts));
         menuItems.add(7, new AddToCartMenu(shoppingCarts));
         menuItems.add(8, new PrintCartItemsMenu(shoppingCarts));
     }
